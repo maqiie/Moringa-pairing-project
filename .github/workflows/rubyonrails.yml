@@ -1,22 +1,58 @@
-name: MoringaPairCI
+name: MoringaPair CI/CD
 
-# conditions that trigger this action
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [ main, development]
   pull_request:
-    branches: [main]
+    branches: [ main, development ]
 
-# functions that will run within the workflow
 jobs:
-  rspec:
+  react:
+    name: React
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: ruby/setup-ruby@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          cd client
+          npm install
+      - name: Build
+        run: |
+          cd client
+          npm run build
+      - name: Test
+        run: |
+          cd client
+          npm run test
+  rails:
+    name: Ruby on Rails
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Ruby and Bundler
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7.4'
-      - run: cd api && bundle install
-      - run: cd api && bundle exec rails db:migrate RAILS_ENV=test
-      - run: cd api && bundle exec rspec spec
+          ruby-version: 2.7.4
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          cd api
+          bundle install
+#       - name: Database setup and migration
+#         run: |
+#           cd api
+#           bin/rails db:setup
+#           if [ -f db/schema.rb ]; then
+#             bin/rails db:migrate
+#           fi
+      - name: Test
+        run: |
+          cd api
+          bin/rails test
