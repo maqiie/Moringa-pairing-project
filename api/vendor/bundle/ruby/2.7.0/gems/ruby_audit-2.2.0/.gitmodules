@@ -1,3 +1,0 @@
-[submodule "vendor/ruby-advisory-db"]
-	path = vendor/ruby-advisory-db
-	url = https://github.com/rubysec/ruby-advisory-db
