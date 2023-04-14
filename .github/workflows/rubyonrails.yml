@@ -18,7 +18,7 @@ jobs:
         with:
           ruby-version: '2.7.4'
       - run: cd api && bundle install
-      - run: cd api && bundle exec rails db:migrate
+     #run: cd api && bundle exec rails db:migrate
       - run: cd api && bundle exec rspec spec
       
       
