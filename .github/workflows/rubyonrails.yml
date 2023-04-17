@@ -30,20 +30,32 @@ jobs:
   rails:
     name: Ruby on Rails
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: rails_test
+          POSTGRES_USER: rails
+          POSTGRES_PASSWORD: password
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install Ruby and Bundler
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.4
-          bundler-cache: true
+          ruby-version: '2.7.4'
+      - run: cd api && bundle install
+      - run: cd api && bundle exec rails db:setup
+      - run: cd api && bundle exec rails db:migrate RAILS_ENV=test
+      - run: cd api && bundle exec rspec spec
 
-      - name: Install dependencies
-        run: |
-          cd api
-          bundle install
-  #     - run: cd api && bundle exec rails db:migrate RAILS_ENV=test
-  #     - run: cd api && bundle exec rspec spec
+
+   
