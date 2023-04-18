@@ -3,8 +3,10 @@ class UsersController < ApplicationController
     
     def create
       user = User.new(user_params)
+      user.role = params[:role] #
       if user.save
-        token = JWT.encode({ user_id: user.id }, Rails.application.secrets.secret_key_base)
+        token = JWT.encode({ user_id: user.id, role: user.role }, Rails.application.secrets.secret_key_base)
+        user.role = params[:role] #
         render json: { user: user, token: token }, status: :created
       else
         render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
@@ -35,7 +37,7 @@ class UsersController < ApplicationController
     private
       
     def user_params
-      params.permit(:fullname, :email, :password, :password_confirmation)
+      params.permit(:fullname, :email, :password, :role, :password_confirmation)
     end
   end
   

@@ -2,6 +2,17 @@ class ApplicationController < ActionController::API
     before_action :authorize_request
 
 
+  # Redirect users to appropriate root path after sign-in
+  def after_sign_in_path_for(resource)
+    if resource.student?
+      student_root_path
+    elsif resource.admin?
+      admin_root_path
+    else
+      super
+    end
+  end
+
     private
   
     def authorize_request
